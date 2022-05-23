@@ -19,7 +19,7 @@ describe("Escrow", function () {
     });
 
     describe("Correct setup", () => {
-        it("Should have correct values", async function () {
+        it("should have correct values", async () => {
             const contractValue = await contract.getValue();
             expect(contractValue).to.equal(escrowValue);
 
@@ -51,17 +51,16 @@ describe("Escrow", function () {
     });
 
     describe("Buy", () => {
-        it("Should fail if sender doesn't send enought tokens", async () => {
+        it("Should fail if sender doesn’t send enough tokens", async function () {
             const options = {value: escrowValue - 1};
-            await expect(contract.connect(buyer).buy(options)).to.be.reverted;
-            // await expect(contract.connect(buyer).buy(options)).to.be.revertedWith(
-            // /Error: insufficient funds for intrinsic transaction cost .*/
-            // );
             // TODO check error msg assertion
+            await expect(contract.connect(buyer).buy(options)).to.be.revertedWith(
+                "VM Exception while processing transaction: reverted with reason string 'O valor transferido precisa ser maior que o valor do escrow"
+            );
         });
 
-        it("Refund", async () => {
-            const options = {value: escrowValue};
+        it("refund", async () => {
+            let options = {value: escrowValue};
             await contract.connect(buyer).buy(options);
 
             let balance = await contract.balance();
@@ -87,14 +86,14 @@ describe("Escrow", function () {
             expect(buyerValue).to.equal("0x0000000000000000000000000000000000000000");
         });
 
-        it("Buy and add more balance", async () => {
+        it("buy and add more balance", async () => {
             let options = {value: escrowValue};
             await contract.connect(buyer).buy(options);
 
             let balance = await contract.balance();
             expect(balance).to.equal(escrowValue);
 
-            let buyerValue = await contract.buyer();
+            const buyerValue = await contract.buyer();
             expect(buyerValue).to.equal(buyerAddress);
 
             let startDate = await contract.startDate();
@@ -104,18 +103,18 @@ describe("Escrow", function () {
 
             increase = 10;
             options = {value: increase};
-            await contract.connect(buyer).addBalance(options);
+            await contract.connect(buyer).addMoreBalance(options);
 
             balance = await contract.balance();
             expect(balance).to.equal(escrowValue + increase);
         });
 
-        it("Buy and send product", async () => {
+        it("buy and and send product", async () => {
             const trackNumber = "FFGA3EV34";
             let options = {value: escrowValue};
             await contract.connect(buyer).buy(options);
 
-            let balance = await contract.balance();
+            balance = await contract.balance();
             expect(balance).to.equal(escrowValue);
 
             let buyerValue = await contract.buyer();
@@ -126,7 +125,7 @@ describe("Escrow", function () {
             expect(buyDate.toNumber()).to.greaterThan(0);
             expect(startDate.toNumber()).to.lessThanOrEqual(buyDate.toNumber());
 
-            await contract.sendProduct(trackNumber);
+            await contract.sendProduct();
 
             const sellerOk = await contract.sellerOk();
             expect(sellerOk).to.equal(true);
