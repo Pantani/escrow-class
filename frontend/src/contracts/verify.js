@@ -1,49 +1,54 @@
-import Escrow from "./Escrow.json";
-import { web3 } from "./web3Util.js";
+import {EscrowContract} from './web3Util.js';
 
-const EscrowContract = new web3.eth.Contract(Escrow.abi);
+const buyer = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.buyer().call({from: address})
+}
+const seller = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.seller().call({from: address})
+}
+const startDate = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.startDate().call({from: address})
+}
+const buyDate = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.buyDate().call({from: address})
+}
+const getValue = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.getValue().call({from: address})
+}
+const balance = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.balance().call({from: address})
+}
+const buyerOk = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.buyerOk().call({from: address})
+}
+const sellerOk = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.sellerOk().call({from: address})
+}
+const trackNumber = (escrowContractAddress, address) => {
+    EscrowContract.options.address = escrowContractAddress;
+    return EscrowContract.methods.trackNumber().call({from: address})
+}
 
-const call = (contractAddress, method, address) => {
-  EscrowContract.options.address = contractAddress;
-  return EscrowContract.methods[method]().call({
-    from: address,
-  });
-};
-const buyer = (contractAddress, address) => {
-  return call(contractAddress, "buyer", address);
-};
-const seller = (contractAddress, address) => {
-  return call(contractAddress, "seller", address);
-};
-const startDate = (contractAddress, address) => {
-  return call(contractAddress, "startDate", address);
-};
-const buyDate = (contractAddress, address) => {
-  return call(contractAddress, "buyDate", address);
-};
-const getValue = (contractAddress, address) => {
-  return call(contractAddress, "getValue", address);
-};
-const balance = (contractAddress, address) => {
-  return call(contractAddress, "balance", address);
-};
-const buyerOk = (contractAddress, address) => {
-  return call(contractAddress, "buyerOk", address);
-};
-const sellerOk = (contractAddress, address) => {
-  return call(contractAddress, "sellerOk", address);
-};
+const getData = async (escrowContractAddress, address) => {
+    return {
+        buyer: await buyer(escrowContractAddress, address),
+        seller: await seller(escrowContractAddress, address),
+        startDate: await startDate(escrowContractAddress, address),
+        buyDate: await buyDate(escrowContractAddress, address),
+        value: await getValue(escrowContractAddress, address),
+        balance: await balance(escrowContractAddress, address),
+        buyerOk: await buyerOk(escrowContractAddress, address),
+        sellerOk: await sellerOk(escrowContractAddress, address),
+        trackNumber: await trackNumber(escrowContractAddress, address),
+    }
+}
 
-const getData = async (contractAddress, address) => {
-  return {
-    buyer: await buyer(contractAddress, address),
-    seller: await seller(contractAddress, address),
-    startDate: await startDate(contractAddress, address),
-    buyDate: await buyDate(contractAddress, address),
-    value: await getValue(contractAddress, address),
-    balance: await balance(contractAddress, address),
-    buyerOk: await buyerOk(contractAddress, address),
-    sellerOk: await sellerOk(contractAddress, address),
-  };
-};
 export default getData;
